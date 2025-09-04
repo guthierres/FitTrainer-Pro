@@ -67,7 +67,10 @@ export function RecentActivity() {
         recentActivities.push({
           id: pagamento.id,
           type: 'payment',
-          description: `Pagamento recebido - ${pagamento.alunos?.nome} (R$ ${Number(pagamento.valor).toFixed(2)})`,
+          description: `Pagamento recebido - ${pagamento.alunos?.nome} (R$ ${Number(pagamento.valor).toLocaleString('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL' 
+          }).replace('R$', '').trim()})`,
           date: pagamento.created_at
         });
       });

@@ -94,7 +94,10 @@ export function Dashboard() {
         />
         <StatsCard
           title="Receita Mensal"
-          value={`R$ ${stats.receitaMensal.toFixed(2)}`}
+          value={`R$ ${stats.receitaMensal.toLocaleString('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL' 
+          }).replace('R$', '').trim()}`}
           icon={CreditCard}
           color="purple"
         />

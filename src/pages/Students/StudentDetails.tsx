@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Edit, Dumbbell, BarChart3, CreditCard, User, Phone, Mail, Calendar } from 'lucide-react';
+import { ArrowLeft, Edit, Dumbbell, BarChart3, CreditCard, User, Phone, Mail, Calendar, Plus, Printer } from 'lucide-react';
 import { supabase, Aluno, Treino, Avaliacao, Pagamento } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { WorkoutBuilder } from '../../components/Workouts/WorkoutBuilder';
+import { WorkoutPrint } from '../../components/Workouts/WorkoutPrint';
 
 export function StudentDetails() {
   const { id } = useParams();
@@ -15,6 +17,8 @@ export function StudentDetails() {
   const [assessments, setAssessments] = useState<Avaliacao[]>([]);
   const [payments, setPayments] = useState<Pagamento[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showWorkoutBuilder, setShowWorkoutBuilder] = useState(false);
+  const [showPrintView, setShowPrintView] = useState(false);
 
   useEffect(() => {
     if (user && id) {
@@ -131,6 +135,28 @@ export function StudentDetails() {
         </Link>
       </div>
 
+      {/* Workout Builder Modal */}
+      {showWorkoutBuilder && (
+        <WorkoutBuilder
+          studentId={id!}
+          studentName={student.nome}
+          onClose={() => setShowWorkoutBuilder(false)}
+          onSave={() => {
+            setShowWorkoutBuilder(false);
+            loadStudentData();
+          }}
+        />
+      )}
+
+      {/* Print View Modal */}
+      {showPrintView && (
+        <WorkoutPrint
+          student={student}
+          workouts={workouts}
+          onClose={() => setShowPrintView(false)}
+        />
+      )}
+
       {/* Student Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
@@ -213,13 +239,13 @@ export function StudentDetails() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
-          to={`/treinos?aluno=${id}`}
+        <button
+          onClick={() => setShowWorkoutBuilder(true)}
           className="flex items-center justify-center space-x-2 bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors"
         >
-          <Dumbbell className="h-5 w-5" />
-          <span className="font-medium">Gerenciar Treinos</span>
-        </Link>
+          <Plus className="h-5 w-5" />
+          <span className="font-medium">Criar Treino</span>
+        </button>
         
         <Link
           to={`/avaliacoes?aluno=${id}`}
@@ -236,6 +262,14 @@ export function StudentDetails() {
           <CreditCard className="h-5 w-5" />
           <span className="font-medium">Gerenciar Pagamentos</span>
         </Link>
+        
+        <button
+          onClick={() => setShowPrintView(true)}
+          className="flex items-center justify-center space-x-2 bg-slate-600 text-white p-4 rounded-lg hover:bg-slate-700 transition-colors"
+        >
+          <Printer className="h-5 w-5" />
+          <span className="font-medium">Imprimir Treino</span>
+        </button>
       </div>
 
       {/* Weight Evolution Chart */}
@@ -267,6 +301,32 @@ export function StudentDetails() {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Observações Médicas</h3>
           <p className="text-slate-600">{student.observacoes}</p>
+        </div>
+      )}
+
+      {/* Current Workouts */}
+      {workouts.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Treino Atual</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {workouts.map((workout) => (
+              <div key={workout.id} className="border border-slate-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Dumbbell className="h-4 w-4 text-blue-600" />
+                  <h4 className="font-medium text-slate-900 text-sm">
+                    {workout.exercicios?.nome}
+                  </h4>
+                </div>
+                <div className="text-xs text-slate-600 space-y-1">
+                  <p><strong>Séries:</strong> {workout.series} x {workout.repeticoes}</p>
+                  <p><strong>Descanso:</strong> {workout.descanso_segundos}s</p>
+                  {workout.observacoes && (
+                    <p><strong>Obs:</strong> {workout.observacoes}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

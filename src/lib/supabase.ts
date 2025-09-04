@@ -70,3 +70,31 @@ export interface Pagamento {
   referente_mes: string;
   created_at: string;
 }
+
+export interface PersonalInfo {
+  id: string;
+  nome: string;
+  registro?: string;
+  telefone?: string;
+  email?: string;
+  endereco?: string;
+  user_id: string;
+  created_at: string;
+}
+
+export interface WorkoutPlan {
+  id: string;
+  aluno_id: string;
+  nome: string;
+  exercicios: WorkoutExercise[];
+  created_at: string;
+}
+
+export interface WorkoutExercise {
+  exercicio_id: string;
+  series: number;
+  repeticoes: number;
+  descanso_segundos: number;
+  observacoes?: string;
+  exercicio?: Exercicio;
+}

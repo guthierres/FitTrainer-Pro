@@ -13,6 +13,7 @@ import { AssessmentsList } from './pages/Assessments/AssessmentsList';
 import { AssessmentForm } from './pages/Assessments/AssessmentForm';
 import { PaymentsList } from './pages/Payments/PaymentsList';
 import { PaymentForm } from './pages/Payments/PaymentForm';
+import { PersonalSettings } from './pages/Settings/PersonalSettings';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -54,6 +55,9 @@ function AppRoutes() {
         <Route path="/pagamentos" element={<PaymentsList />} />
         <Route path="/pagamentos/novo" element={<PaymentForm />} />
         <Route path="/pagamentos/:id/editar" element={<PaymentForm />} />
+        
+        {/* Settings Routes */}
+        <Route path="/configuracoes" element={<PersonalSettings />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -7,7 +7,8 @@ import {
   BarChart3, 
   CreditCard, 
   LogOut,
-  Activity
+  Activity,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -20,6 +21,7 @@ export function Sidebar() {
     { name: 'Treinos', href: '/treinos', icon: Dumbbell },
     { name: 'Avaliações', href: '/avaliacoes', icon: BarChart3 },
     { name: 'Pagamentos', href: '/pagamentos', icon: CreditCard },
+    { name: 'Configurações', href: '/configuracoes', icon: Settings },
   ];
 
   return (

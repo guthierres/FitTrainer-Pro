@@ -121,7 +121,10 @@ export function PaymentsList() {
           <div>
             <h3 className="text-lg font-medium">Receita Total (Filtros Aplicados)</h3>
             <p className="text-3xl font-bold mt-1">
-              R$ {totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              R$ {totalRevenue.toLocaleString('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL' 
+              }).replace('R$', '').trim()}
             </p>
           </div>
           <DollarSign className="h-12 w-12 text-green-100" />
@@ -223,7 +226,10 @@ export function PaymentsList() {
                       {payment.referente_mes}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                      R$ {Number(payment.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      R$ {Number(payment.valor).toLocaleString('pt-BR', { 
+                        style: 'currency', 
+                        currency: 'BRL' 
+                      }).replace('R$', '').trim()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                       {payment.data_pagamento 
