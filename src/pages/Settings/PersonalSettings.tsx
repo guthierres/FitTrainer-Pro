@@ -9,9 +9,10 @@ export function PersonalSettings() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [personalId, setPersonalId] = useState<string | null>(null); // Novo estado para o ID do registro
   
   const [formData, setFormData] = useState({
-    nome: 'Áquila',
+    nome: '',
     registro: '',
     telefone: '',
     email: '',
@@ -26,15 +27,20 @@ export function PersonalSettings() {
 
   async function loadPersonalInfo() {
     try {
-      let { data } = await supabase
+      let { data, error } = await supabase
         .from('personal_info')
-        .select('*')
-        .eq('user_id', user!.id)
-        .single();
+        .select('*, id') // 1. Selecione o ID do registro
+        .eq('user_id', user!.id);
 
-      if (!data) {
-        // Create default if doesn't exist
-        const { data: newData, error } = await supabase
+      if (error) throw error;
+      
+      let personalData = null;
+      
+      if (data && data.length > 0) {
+        personalData = data[0];
+        setPersonalId(personalData.id); // 2. Armazene o ID no estado
+      } else {
+        const { data: newData, error: newError } = await supabase
           .from('personal_info')
           .insert({
             nome: 'Áquila',
@@ -43,19 +49,22 @@ export function PersonalSettings() {
           .select()
           .single();
 
-        if (error) throw error;
-        data = newData;
+        if (newError) throw newError;
+        personalData = newData;
+        setPersonalId(newData.id); // 3. Armazene o ID do novo registro
       }
-
+      
       setFormData({
-        nome: data.nome || 'Áquila',
-        registro: data.registro || '',
-        telefone: data.telefone || '',
-        email: data.email || '',
-        endereco: data.endereco || ''
+        nome: personalData?.nome || 'Áquila',
+        registro: personalData?.registro || '',
+        telefone: personalData?.telefone || '',
+        email: personalData?.email || '',
+        endereco: personalData?.endereco || ''
       });
-    } catch (error) {
-      console.error('Error loading personal info:', error);
+      
+    } catch (err) {
+      console.error('Erro ao carregar informações pessoais:', err);
+      setError('Erro ao carregar informações. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -72,14 +81,15 @@ export function PersonalSettings() {
         .from('personal_info')
         .upsert({
           ...formData,
+          id: personalId, // 4. Adicione o ID do registro para que o upsert atualize
           user_id: user!.id
         });
 
       if (error) throw error;
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (error) {
-      console.error('Error saving personal info:', error);
+    } catch (err) {
+      console.error('Erro ao salvar informações:', err);
       setError('Erro ao salvar informações');
     } finally {
       setSaving(false);
